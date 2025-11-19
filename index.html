@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIN 검색 갤러리</title>
     <style>
-        /* 기본적인 UI 스타일 (이전에 사진에서 본 디자인을 재현합니다) */
+        /* 기본적인 UI 스타일 */
         body { 
             font-family: Arial, sans-serif; 
             display: flex; 
@@ -80,20 +80,36 @@
 
     <script>
         // ⭐ Firebase 프로젝트 설정 정보 (고객님의 photo2-352bf 프로젝트 정보) ⭐
+        // projectId를 콘솔에 표시된 'photo2'로 변경하여 데이터베이스 ID와 일치시킵니다.
         const firebaseConfig = {
             apiKey: "AIzaSyDvlHZf1CYmpwuLBfHUC9A1KAj608ekX6Q",
             authDomain: "photo2-352bf.firebaseapp.com",
-            projectId: "photo2-352bf",
+            projectId: "photo2", // <--- 🌟🌟🌟 이 부분을 수정했습니다. 🌟🌟🌟
             storageBucket: "photo2-352bf.firebasestorage.app",
             messagingSenderId: "603476388610",
             appId: "1:603476388610:web:67117489236ff3900c701b",
             measurementId: "G-Z69XFJQJ7D"
         };
 
-        // Firebase 초기화
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const carsRef = db.collection("cars"); // VIN 데이터가 저장된 컬렉션 이름
+        // Firebase 초기화 로직
+        let db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            
+            // 에뮬레이터 설정 충돌 방지를 위해 주석 처리하거나 제거합니다.
+            // db.useEmulator("localhost", 8080);
+            
+            console.log("Firebase initialized successfully.");
+
+        } catch (e) {
+            console.error("Firebase Initialization Error:", e);
+            document.getElementById('result-area').innerHTML = 
+                '<p class="error">❌ Firebase 초기화 실패! (API 키 또는 프로젝트 ID 오류)</p>';
+            
+        }
+        
+        const carsRef = db ? db.collection("cars") : null; // Firestore 컬렉션 참조
 
         /**
          * VIN을 검색하고 Firestore에서 앨범 URL을 조회하는 함수
@@ -101,6 +117,12 @@
         async function searchVin() {
             const vin = document.getElementById('vinInput').value.trim();
             const resultArea = document.getElementById('result-area');
+            
+            if (!db) {
+                resultArea.innerHTML = '<p class="error">Firebase 서비스가 초기화되지 않았습니다. 콘솔 오류를 확인하세요.</p>';
+                return;
+            }
+
             resultArea.innerHTML = '<p style="color: #007bff;">🔍 Searching...</p>';
 
             if (!vin) {
@@ -122,8 +144,6 @@
                                 <a href="${url}" target="_blank" style="color: #007bff; font-weight: bold; text-decoration: none;">➡️ Google 포토 앨범 바로가기</a>
                             </p>
                         `;
-                         // 앨범 링크를 새 창으로 바로 띄우려면 아래 주석을 해제합니다.
-                         // window.open(url, '_blank'); 
                     } else {
                          resultArea.innerHTML = `<p class="error">❌ 오류: 앨범 URL 데이터가 비어 있습니다. Firestore를 확인해주세요.</p>`;
                     }
@@ -132,8 +152,7 @@
                     resultArea.innerHTML = `<p class="error">❌ 오류: VIN **${vin}** 에 해당하는 차량 정보를 찾을 수 없습니다.</p>`;
                 }
             } catch (error) {
-                // 이 콘솔 오류는 네트워크 연결 문제나 API 키 문제(1번 오류)를 나타냅니다.
-                console.error("Firestore Error:", error); 
+                console.error("Firestore Read Error (Check Rules/Data):", error); 
                 resultArea.innerHTML = `<p class="error">데이터베이스 조회 중 오류가 발생했습니다. (Console을 확인하세요)</p>`;
             }
         }
