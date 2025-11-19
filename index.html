@@ -105,8 +105,8 @@
             
         }
         
-        // 🌟🌟🌟 컬렉션 이름을 데이터베이스에 저장된 'casrs'로 수정합니다. 🌟🌟🌟
-        const carsRef = db ? db.collection("casrs") : null; 
+        // 🌟🌟🌟 컬렉션 이름을 데이터베이스와 일치하는 'cars'로 수정합니다. 🌟🌟🌟
+        const carsRef = db ? db.collection("cars") : null; 
 
         /**
          * VIN을 검색하고 Firestore에서 앨범 URL을 조회하는 함수
@@ -132,7 +132,7 @@
                 const doc = await carsRef.doc(vin).get();
 
                 if (doc.exists) {
-                    // 필드 이름도 'albumUrl'로 정확히 지정되어 있어야 합니다.
+                    // 필드 이름 'albumUrl'로 조회
                     const url = doc.data().albumUrl; 
                     
                     if (url) {
