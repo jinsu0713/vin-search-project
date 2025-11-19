@@ -80,11 +80,10 @@
 
     <script>
         // ⭐ Firebase 프로젝트 설정 정보 (고객님의 photo2-352bf 프로젝트 정보) ⭐
-        // projectId를 콘솔에 표시된 'photo2'로 변경하여 데이터베이스 ID와 일치시킵니다.
         const firebaseConfig = {
             apiKey: "AIzaSyDvlHZf1CYmpwuLBfHUC9A1KAj608ekX6Q",
             authDomain: "photo2-352bf.firebaseapp.com",
-            projectId: "photo2", // <--- 🌟🌟🌟 이 부분을 수정했습니다. 🌟🌟🌟
+            projectId: "photo2", 
             storageBucket: "photo2-352bf.firebasestorage.app",
             messagingSenderId: "603476388610",
             appId: "1:603476388610:web:67117489236ff3900c701b",
@@ -97,9 +96,6 @@
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
             
-            // 에뮬레이터 설정 충돌 방지를 위해 주석 처리하거나 제거합니다.
-            // db.useEmulator("localhost", 8080);
-            
             console.log("Firebase initialized successfully.");
 
         } catch (e) {
@@ -109,7 +105,8 @@
             
         }
         
-        const carsRef = db ? db.collection("cars") : null; // Firestore 컬렉션 참조
+        // 🌟🌟🌟 컬렉션 이름을 데이터베이스에 저장된 'casrs'로 수정합니다. 🌟🌟🌟
+        const carsRef = db ? db.collection("casrs") : null; 
 
         /**
          * VIN을 검색하고 Firestore에서 앨범 URL을 조회하는 함수
@@ -135,7 +132,8 @@
                 const doc = await carsRef.doc(vin).get();
 
                 if (doc.exists) {
-                    const url = doc.data().albumUrl;
+                    // 필드 이름도 'albumUrl'로 정확히 지정되어 있어야 합니다.
+                    const url = doc.data().albumUrl; 
                     
                     if (url) {
                          resultArea.innerHTML = `
@@ -145,7 +143,7 @@
                             </p>
                         `;
                     } else {
-                         resultArea.innerHTML = `<p class="error">❌ 오류: 앨범 URL 데이터가 비어 있습니다. Firestore를 확인해주세요.</p>`;
+                         resultArea.innerHTML = `<p class="error">❌ 오류: 앨범 URL 데이터가 비어 있습니다. Firestore 필드(albumUrl)를 확인해주세요.</p>`;
                     }
                    
                 } else {
